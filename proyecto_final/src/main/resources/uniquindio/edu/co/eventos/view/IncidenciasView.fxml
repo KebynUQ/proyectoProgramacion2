@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="uniquindio.edu.co.eventos.controller.IncidenciasController"
+      spacing="15"
+      stylesheets="@../css/styles.css"
+      styleClass="view-container">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Gestion de Incidencias" styleClass="section-title"/>
+
+    <HBox spacing="10">
+        <ComboBox fx:id="cmbTipoIncidencia" promptText="Tipo de incidencia" prefWidth="220"/>
+        <Button text="Filtrar" onAction="#filtrarPorTipo" styleClass="secondary-button"/>
+        <Button text="Cargar todas" onAction="#cargarIncidencias" styleClass="secondary-button"/>
+    </HBox>
+
+    <TextArea fx:id="txtDescripcion" promptText="Descripcion de la incidencia..." prefHeight="80" wrapText="true"/>
+
+    <Button text="Registrar incidencia" onAction="#registrarIncidencia" styleClass="primary-button"/>
+
+    <TableView fx:id="tablaIncidencias" prefHeight="300">
+        <columns>
+            <TableColumn fx:id="colIdIncidencia" text="ID" prefWidth="100"/>
+            <TableColumn fx:id="colTipo" text="Tipo" prefWidth="180"/>
+            <TableColumn fx:id="colDescripcion" text="Descripcion" prefWidth="350"/>
+            <TableColumn fx:id="colFecha" text="Fecha" prefWidth="180"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="lblMensaje" text="" styleClass="info-label"/>
+
+</VBox>

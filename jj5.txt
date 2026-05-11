@@ -1,0 +1,715 @@
+Pensó durante 9s
+
+La ruta base para los tests es:
+
+src/test/java/uniquindio/edu/co/eventos/
+
+Debes crear estas carpetas:
+
+src/test/java/uniquindio/edu/co/eventos/model/
+src/test/java/uniquindio/edu/co/eventos/patterns/
+Tests de model
+UsuarioTest.java
+package uniquindio.edu.co.eventos.model;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class UsuarioTest {
+
+    @Test
+    public void crearUsuarioTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        assertEquals("USU-001", usuario.getIdUsuario());
+        assertEquals("Kebyn Ochoa", usuario.getNombreCompleto());
+        assertEquals("kebyn@uq.edu.co", usuario.getCorreo());
+        assertEquals("3001234567", usuario.getTelefono());
+    }
+
+    @Test
+    public void actualizarPerfilTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        usuario.actualizarPerfil("Kebyn Julián", "3112223344");
+
+        assertEquals("Kebyn Julián", usuario.getNombreCompleto());
+        assertEquals("3112223344", usuario.getTelefono());
+    }
+}
+EventoTest.java
+package uniquindio.edu.co.eventos.model;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.enums.EstadoEvento;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EventoTest {
+
+    @Test
+    public void crearEventoTest() {
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        assertEquals("EVE-001", evento.getIdEvento());
+        assertEquals("Concierto Universitario", evento.getNombre());
+        assertEquals("Concierto", evento.getCategoria());
+        assertEquals("Armenia", evento.getCiudad());
+        assertEquals(30000, evento.getPrecioBase());
+    }
+
+    @Test
+    public void cambiarEstadoEventoTest() {
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        evento.cambiarEstado(EstadoEvento.PUBLICADO);
+
+        assertEquals(EstadoEvento.PUBLICADO, evento.getEstadoEvento());
+    }
+}
+CompraTest.java
+package uniquindio.edu.co.eventos.model;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.enums.EstadoCompra;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CompraTest {
+
+    @Test
+    public void crearCompraYCalcularTotalTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        Zona zona = new Zona("ZON-001", "VIP", 10, 80000);
+        Asiento asiento = new Asiento("ASI-001", "A", 1);
+
+        Entrada entrada = new Entrada(
+                "ENT-001",
+                zona,
+                asiento,
+                zona.getPrecioBase()
+        );
+
+        Compra compra = new Compra("COM-001", usuario, evento);
+        compra.agregarEntrada(entrada);
+        compra.calcularTotal();
+
+        assertEquals(80000, compra.getTotal());
+        assertEquals(1, compra.getEntradas().size());
+    }
+
+    @Test
+    public void cancelarCompraTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        Compra compra = new Compra("COM-001", usuario, evento);
+        compra.cancelar();
+
+        assertEquals(EstadoCompra.CANCELADA, compra.getEstadoCompra());
+    }
+}
+PagoTest.java
+package uniquindio.edu.co.eventos.model;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.patterns.behavioral.PagoSimulado;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PagoTest {
+
+    @Test
+    public void procesarPagoExitosoTest() {
+        Pago pago = new Pago(
+                "PAG-001",
+                50000,
+                "Pago simulado",
+                new PagoSimulado()
+        );
+
+        boolean resultado = pago.procesarPago();
+
+        assertTrue(resultado);
+    }
+
+    @Test
+    public void procesarPagoFallidoTest() {
+        Pago pago = new Pago(
+                "PAG-002",
+                0,
+                "Pago simulado",
+                new PagoSimulado()
+        );
+
+        boolean resultado = pago.procesarPago();
+
+        assertFalse(resultado);
+    }
+}
+IncidenciaTest.java
+package uniquindio.edu.co.eventos.model;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class IncidenciaTest {
+
+    @Test
+    public void crearIncidenciaTest() {
+        Incidencia incidencia = new Incidencia(
+                "INC-001",
+                TipoIncidencia.ERROR_PAGO,
+                "Error al procesar el pago"
+        );
+
+        assertEquals("INC-001", incidencia.getIdIncidencia());
+        assertEquals(TipoIncidencia.ERROR_PAGO, incidencia.getTipo());
+        assertEquals("Error al procesar el pago", incidencia.getDescripcion());
+        assertNotNull(incidencia.getFecha());
+    }
+}
+Tests de patterns
+SistemaEventosTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.SistemaEventos;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class SistemaEventosTest {
+
+    @Test
+    public void singletonDebeRetornarMismaInstanciaTest() {
+        SistemaEventos sistema1 = SistemaEventos.getInstancia();
+        SistemaEventos sistema2 = SistemaEventos.getInstancia();
+
+        assertSame(sistema1, sistema2);
+    }
+}
+EventoFactoryTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Recinto;
+import uniquindio.edu.co.eventos.patterns.creational.ConciertoFactory;
+import uniquindio.edu.co.eventos.patterns.creational.EventoFactory;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EventoFactoryTest {
+
+    @Test
+    public void crearEventoConFactoryTest() {
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        EventoFactory factory = new ConciertoFactory();
+
+        Evento evento = factory.crearEvento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        assertNotNull(evento);
+        assertEquals("Concierto", evento.getCategoria());
+        assertEquals("Concierto Universitario", evento.getNombre());
+    }
+}
+CompraBuilderTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.Compra;
+import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Recinto;
+import uniquindio.edu.co.eventos.model.Usuario;
+import uniquindio.edu.co.eventos.patterns.creational.CompraBuilder;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CompraBuilderTest {
+
+    @Test
+    public void construirCompraConBuilderTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        Compra compra = new CompraBuilder()
+                .conId("COM-001")
+                .conUsuario(usuario)
+                .conEvento(evento)
+                .build();
+
+        assertNotNull(compra);
+        assertEquals("COM-001", compra.getIdCompra());
+        assertEquals(usuario, compra.getUsuario());
+        assertEquals(evento, compra.getEvento());
+    }
+}
+CompraDecoratorTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.patterns.structural.AccesoPreferencial;
+import uniquindio.edu.co.eventos.patterns.structural.Parqueadero;
+import uniquindio.edu.co.eventos.patterns.structural.ServicioAdicional;
+import uniquindio.edu.co.eventos.patterns.structural.ServicioVIP;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CompraDecoratorTest {
+
+    @Test
+    public void agregarServiciosAdicionalesTest() {
+        ServicioAdicional servicio = null;
+
+        servicio = new ServicioVIP(servicio);
+        servicio = new Parqueadero(servicio);
+        servicio = new AccesoPreferencial(servicio);
+
+        assertTrue(servicio.getPrecio() > 0);
+        assertTrue(servicio.getDescripcion().contains("Servicio VIP"));
+        assertTrue(servicio.getDescripcion().contains("Parqueadero"));
+        assertTrue(servicio.getDescripcion().contains("Acceso preferencial"));
+    }
+}
+EstrategiaPagoTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.patterns.behavioral.EstrategiaPago;
+import uniquindio.edu.co.eventos.patterns.behavioral.PagoPSE;
+import uniquindio.edu.co.eventos.patterns.behavioral.PagoSimulado;
+import uniquindio.edu.co.eventos.patterns.behavioral.PagoTarjeta;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class EstrategiaPagoTest {
+
+    @Test
+    public void pagoTarjetaTest() {
+        EstrategiaPago estrategia = new PagoTarjeta();
+
+        assertTrue(estrategia.procesarPago(50000));
+    }
+
+    @Test
+    public void pagoPSETest() {
+        EstrategiaPago estrategia = new PagoPSE();
+
+        assertTrue(estrategia.procesarPago(50000));
+    }
+
+    @Test
+    public void pagoSimuladoTest() {
+        EstrategiaPago estrategia = new PagoSimulado();
+
+        assertTrue(estrategia.procesarPago(50000));
+    }
+
+    @Test
+    public void pagoMontoCeroTest() {
+        EstrategiaPago estrategia = new PagoSimulado();
+
+        assertFalse(estrategia.procesarPago(0));
+    }
+}
+ObserverTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Recinto;
+import uniquindio.edu.co.eventos.model.Usuario;
+import uniquindio.edu.co.eventos.model.enums.EstadoEvento;
+import uniquindio.edu.co.eventos.patterns.behavioral.ObservableEvento;
+import uniquindio.edu.co.eventos.patterns.behavioral.ObservadorUsuario;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ObserverTest {
+
+    @Test
+    public void agregarObservadorYNotificarTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        ObservableEvento observableEvento = new ObservableEvento(evento);
+        ObservadorUsuario observadorUsuario = new ObservadorUsuario(usuario);
+
+        observableEvento.agregarObservador(observadorUsuario);
+        observableEvento.cambiarEstadoEvento(EstadoEvento.CANCELADO);
+
+        assertEquals(1, observableEvento.getObservadores().size());
+        assertEquals(EstadoEvento.CANCELADO, evento.getEstadoEvento());
+    }
+}
+StateCompraTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.Compra;
+import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Recinto;
+import uniquindio.edu.co.eventos.model.Usuario;
+import uniquindio.edu.co.eventos.model.enums.EstadoCompra;
+import uniquindio.edu.co.eventos.patterns.behavioral.CompraCreada;
+import uniquindio.edu.co.eventos.patterns.behavioral.CompraPagada;
+import uniquindio.edu.co.eventos.patterns.behavioral.EstadoCompraBehavior;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class StateCompraTest {
+
+    @Test
+    public void cambiarEstadoDeCompraTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        Compra compra = new Compra("COM-001", usuario, evento);
+
+        EstadoCompraBehavior estadoCreada = new CompraCreada();
+        estadoCreada.pagar(compra);
+
+        assertEquals(EstadoCompra.PAGADA, compra.getEstadoCompra());
+
+        EstadoCompraBehavior estadoPagada = new CompraPagada();
+        estadoPagada.confirmar(compra);
+
+        assertEquals(EstadoCompra.CONFIRMADA, compra.getEstadoCompra());
+    }
+}
+CompraFacadeTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.Asiento;
+import uniquindio.edu.co.eventos.model.Compra;
+import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Recinto;
+import uniquindio.edu.co.eventos.model.Usuario;
+import uniquindio.edu.co.eventos.model.Zona;
+import uniquindio.edu.co.eventos.model.enums.EstadoAsiento;
+import uniquindio.edu.co.eventos.patterns.behavioral.PagoSimulado;
+import uniquindio.edu.co.eventos.patterns.structural.CompraFacade;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CompraFacadeTest {
+
+    @Test
+    public void realizarCompraConFacadeTest() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        Zona zona = new Zona("ZON-001", "VIP", 10, 80000);
+        Asiento asiento = new Asiento("ASI-001", "A", 1);
+        zona.agregarAsiento(asiento);
+
+        CompraFacade facade = new CompraFacade();
+
+        Compra compra = facade.realizarCompra(
+                usuario,
+                evento,
+                zona,
+                asiento,
+                new PagoSimulado()
+        );
+
+        assertNotNull(compra);
+        assertEquals(EstadoAsiento.VENDIDO, asiento.getEstadoAsiento());
+        assertTrue(compra.getTotal() > 0);
+    }
+}
+ReporteTest.java
+package uniquindio.edu.co.eventos.patterns;
+
+import org.junit.jupiter.api.Test;
+import uniquindio.edu.co.eventos.model.Compra;
+import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Recinto;
+import uniquindio.edu.co.eventos.model.Usuario;
+import uniquindio.edu.co.eventos.patterns.structural.GeneradorReporte;
+import uniquindio.edu.co.eventos.patterns.structural.GeneradorReporteCSV;
+import uniquindio.edu.co.eventos.patterns.structural.GeneradorReportePDF;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ReporteTest {
+
+    @Test
+    public void generarReporteCSVTest() {
+        ArrayList<Compra> compras = crearComprasDePrueba();
+
+        GeneradorReporte generador = new GeneradorReporteCSV();
+        String reporte = generador.generarReporte(compras);
+
+        assertNotNull(reporte);
+        assertTrue(reporte.contains("ID_COMPRA"));
+        assertTrue(reporte.contains("COM-001"));
+    }
+
+    @Test
+    public void generarReportePDFTest() {
+        ArrayList<Compra> compras = crearComprasDePrueba();
+
+        GeneradorReporte generador = new GeneradorReportePDF();
+        String reporte = generador.generarReporte(compras);
+
+        assertNotNull(reporte);
+        assertTrue(reporte.contains("REPORTE PDF SIMULADO"));
+        assertTrue(reporte.contains("COM-001"));
+    }
+
+    private ArrayList<Compra> crearComprasDePrueba() {
+        Usuario usuario = new Usuario(
+                "USU-001",
+                "Kebyn Ochoa",
+                "kebyn@uq.edu.co",
+                "3001234567",
+                "1234"
+        );
+
+        Recinto recinto = new Recinto(
+                "REC-001",
+                "Auditorio UQ",
+                "Carrera 15",
+                "Armenia"
+        );
+
+        Evento evento = new Evento(
+                "EVE-001",
+                "Concierto Universitario",
+                "Concierto",
+                "Evento musical",
+                "Armenia",
+                LocalDateTime.now().plusDays(5),
+                recinto,
+                30000
+        );
+
+        Compra compra = new Compra("COM-001", usuario, evento);
+        compra.calcularTotal();
+
+        ArrayList<Compra> compras = new ArrayList<>();
+        compras.add(compra);
+
+        return compras;
+    }
+}
