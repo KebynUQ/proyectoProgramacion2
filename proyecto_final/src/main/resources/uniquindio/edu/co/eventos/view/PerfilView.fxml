@@ -32,9 +32,9 @@
         <TextField fx:id="txtTelefono" prefWidth="280" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
     </GridPane>
 
-    <Button text="Actualizar perfil" onAction="#actualizarPerfil" styleClass="primary-button"/>
+    <Button fx:id="btnActualizarPerfil" text="Actualizar perfil" onAction="#actualizarPerfil" styleClass="primary-button"/>
 
-    <Label text="Historial de compras" styleClass="subtitle-label"/>
+    <Label fx:id="lblHistorialCompras" text="Historial de compras" styleClass="subtitle-label"/>
 
     <TableView fx:id="tablaHistorialCompras" prefHeight="300">
         <columns>

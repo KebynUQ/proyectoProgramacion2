@@ -3,6 +3,7 @@ package uniquindio.edu.co.eventos.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import uniquindio.edu.co.eventos.model.Sesion;
 import uniquindio.edu.co.eventos.model.PanelMetricas;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
 import uniquindio.edu.co.eventos.patterns.structural.GeneradorReporte;
@@ -20,7 +21,21 @@ public class ReportesController {
     private final SistemaEventos sistemaEventos = SistemaEventos.getInstancia();
 
     @FXML
+    public void initialize() {
+        if (!Sesion.esAdministrador()) {
+            txtReporte.setDisable(true);
+            txtReporte.setText("");
+            lblMensaje.setText("Acceso denegado. Vista disponible solo para administradores.");
+        }
+    }
+
+    @FXML
     private void generarReporteCSV() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         GeneradorReporte generador = new GeneradorReporteCSV();
         txtReporte.setText(generador.generarReporte(sistemaEventos.getCompras()));
         lblMensaje.setText("Reporte CSV generado.");
@@ -28,6 +43,11 @@ public class ReportesController {
 
     @FXML
     private void generarReportePDF() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         GeneradorReporte generador = new GeneradorReportePDF();
         txtReporte.setText(generador.generarReporte(sistemaEventos.getCompras()));
         lblMensaje.setText("Reporte PDF generado.");
@@ -35,6 +55,11 @@ public class ReportesController {
 
     @FXML
     private void mostrarMetricas() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         PanelMetricas panelMetricas = new PanelMetricas();
         panelMetricas.calcularMetricas(sistemaEventos.getCompras(), sistemaEventos.getIncidencias());
         txtReporte.setText(panelMetricas.visualizarMetricas());

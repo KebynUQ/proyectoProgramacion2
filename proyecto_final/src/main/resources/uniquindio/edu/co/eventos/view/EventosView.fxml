@@ -3,10 +3,14 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -20,7 +24,7 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Gestion de Eventos" styleClass="section-title"/>
+    <Label fx:id="lblTituloVista" text="Gestion de Eventos" styleClass="section-title"/>
 
     <HBox spacing="10">
         <TextField fx:id="txtBuscar" promptText="Buscar evento..." prefWidth="250"/>
@@ -29,6 +33,57 @@
         <Button text="Filtrar" onAction="#filtrarEventos" styleClass="primary-button"/>
         <Button text="Limpiar" onAction="#limpiarFiltros" styleClass="secondary-button"/>
     </HBox>
+
+    <VBox fx:id="panelAdministracion" spacing="10">
+        <Label text="Formulario administrativo" styleClass="subtitle-label"/>
+
+        <GridPane hgap="10" vgap="10">
+            <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtNombreEvento" promptText="Nombre del evento" prefWidth="240"
+                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Categoria:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+            <ComboBox fx:id="cmbCategoriaFormulario" promptText="Seleccione categoria" prefWidth="180"
+                      GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+            <Label text="Ciudad:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtCiudadEvento" promptText="Ciudad" prefWidth="240"
+                       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Precio base:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+            <TextField fx:id="txtPrecioBase" promptText="50000" prefWidth="180"
+                       GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+            <Label text="Fecha:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <DatePicker fx:id="datePickerFechaEvento" prefWidth="240"
+                        GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Hora:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+            <HBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="3">
+                <ComboBox fx:id="cmbHoraEvento" promptText="Hora" prefWidth="80"/>
+                <Label text=":"/>
+                <ComboBox fx:id="cmbMinutosEvento" promptText="Min" prefWidth="80"/>
+            </HBox>
+
+            <Label text="Recinto:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <ComboBox fx:id="cmbRecintoEvento" promptText="Seleccione recinto" prefWidth="180"
+                      GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <Label text="Descripcion:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtDescripcionEvento" promptText="Descripcion del evento" prefWidth="430"
+                       GridPane.rowIndex="4" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+        </GridPane>
+
+        <HBox fx:id="boxAccionesAdmin" spacing="10">
+            <Button fx:id="btnCrearEvento" text="Crear evento" onAction="#crearEvento" styleClass="primary-button"/>
+            <Button fx:id="btnActualizarEvento" text="Actualizar evento" onAction="#actualizarEvento" styleClass="secondary-button"/>
+            <Button fx:id="btnEliminarEvento" text="Eliminar evento" onAction="#eliminarEvento" styleClass="danger-button"/>
+            <Button fx:id="btnPublicarEvento" text="Publicar" onAction="#publicarEvento" styleClass="secondary-button"/>
+            <Button fx:id="btnPausarEvento" text="Pausar" onAction="#pausarEvento" styleClass="secondary-button"/>
+            <Button fx:id="btnCancelarEvento" text="Cancelar" onAction="#cancelarEvento" styleClass="danger-button"/>
+            <Button fx:id="btnLimpiarFormulario" text="Limpiar formulario" onAction="#limpiarFormulario" styleClass="secondary-button"/>
+        </HBox>
+    </VBox>
 
     <TableView fx:id="tablaEventos" prefHeight="350">
         <columns>
@@ -41,13 +96,20 @@
         </columns>
     </TableView>
 
-    <HBox spacing="10">
-        <Button text="Ver detalle" onAction="#verDetalleEvento" styleClass="secondary-button"/>
-        <Button text="Comprar entrada" onAction="#comprarEvento" styleClass="primary-button"/>
-        <Button text="Publicar" onAction="#publicarEvento" styleClass="secondary-button"/>
-        <Button text="Pausar" onAction="#pausarEvento" styleClass="secondary-button"/>
-        <Button text="Cancelar" onAction="#cancelarEvento" styleClass="danger-button"/>
+    <HBox fx:id="boxAccionesTabla" spacing="10">
+        <Button fx:id="btnVerDetalle" text="Ver detalle" onAction="#verDetalleEvento" styleClass="secondary-button"/>
+        <Button fx:id="btnComprarEntrada" text="Comprar entrada" onAction="#comprarEvento" styleClass="primary-button"/>
     </HBox>
+
+    <ScrollPane fx:id="scrollEventosCards" fitToWidth="true" hbarPolicy="NEVER" prefHeight="420">
+        <content>
+            <FlowPane fx:id="flowEventosCards" hgap="18" vgap="18" prefWrapLength="900">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </FlowPane>
+        </content>
+    </ScrollPane>
 
     <Label fx:id="lblMensaje" text="" styleClass="info-label"/>
 

@@ -62,7 +62,7 @@ public class LoginController {
 
         } else {
             Administrador administrador = sistemaEventos.validarLoginAdministrador(correo, contrasena);
-
+            System.out.println(administrador);
             if (administrador != null) {
                 Sesion.iniciarSesionAdministrador(administrador);
                 lblMensaje.setText("Inicio de sesion correcto como administrador.");
@@ -77,6 +77,7 @@ public class LoginController {
     private void registrarUsuario() {
         String correo = txtCorreo.getText();
         String contrasena = txtContrasena.getText();
+        String tipo = cmbTipoUsuario.getValue();
 
         if (correo == null || correo.isBlank() || contrasena == null || contrasena.isBlank()) {
             lblMensaje.setText("Ingrese correo y contrasena para registrarse.");
@@ -90,16 +91,26 @@ public class LoginController {
             return;
         }
 
-        Usuario nuevoUsuario = new Usuario(
+        if ("Administrador".equals(tipo)) {
+            Administrador nuevoAdministrador = new Administrador(
+                "ADM-" + System.currentTimeMillis(),
+                "Administrador Nuevo",
+                correo,
+                contrasena
+            );
+            sistemaEventos.registrarAdministrador(nuevoAdministrador);
+            lblMensaje.setText("Administrador registrado correctamente.");
+        } else {
+            Usuario nuevoUsuario = new Usuario(
                 "USU-" + System.currentTimeMillis(),
                 "Usuario Nuevo",
                 correo,
                 "Sin telefono",
                 contrasena
-        );
-
-        sistemaEventos.registrarUsuario(nuevoUsuario);
-        lblMensaje.setText("Usuario registrado correctamente.");
+            );
+            sistemaEventos.registrarUsuario(nuevoUsuario);
+            lblMensaje.setText("Usuario registrado correctamente.");
+        }
     }
 
     private void abrirMainLayout() {

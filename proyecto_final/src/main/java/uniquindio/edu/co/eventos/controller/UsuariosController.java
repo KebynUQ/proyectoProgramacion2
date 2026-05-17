@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import uniquindio.edu.co.eventos.model.Sesion;
 import uniquindio.edu.co.eventos.model.Usuario;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
 
@@ -43,11 +44,25 @@ public class UsuariosController {
         colNombre.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNombreCompleto()));
         colCorreo.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCorreo()));
         colTelefono.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTelefono()));
+
+        if (!Sesion.esAdministrador()) {
+            txtBuscarUsuario.setDisable(true);
+            tablaUsuarios.setDisable(true);
+            lblMensaje.setText("Acceso denegado. Vista disponible solo para administradores.");
+            tablaUsuarios.setItems(FXCollections.observableArrayList());
+            return;
+        }
+
         cargarUsuarios();
     }
 
     @FXML
     private void buscarUsuario() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         String texto = txtBuscarUsuario.getText() == null ? "" : txtBuscarUsuario.getText().trim().toLowerCase();
         ArrayList<Usuario> resultado = new ArrayList<>();
 
@@ -64,12 +79,23 @@ public class UsuariosController {
 
     @FXML
     private void cargarUsuarios() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            tablaUsuarios.setItems(FXCollections.observableArrayList());
+            return;
+        }
+
         tablaUsuarios.setItems(FXCollections.observableArrayList(sistemaEventos.getUsuarios()));
         lblMensaje.setText("Tabla actualizada.");
     }
 
     @FXML
     private void verComprasUsuario() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         Usuario usuario = tablaUsuarios.getSelectionModel().getSelectedItem();
         lblMensaje.setText(usuario == null ? "Seleccione un usuario." : "Compras registradas: " + usuario.getCompras().size());
     }

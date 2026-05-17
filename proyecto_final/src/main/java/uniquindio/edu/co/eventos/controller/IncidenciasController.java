@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import uniquindio.edu.co.eventos.model.Sesion;
 import uniquindio.edu.co.eventos.model.Incidencia;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
 import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
@@ -52,11 +53,25 @@ public class IncidenciasController {
         colDescripcion.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDescripcion()));
         colFecha.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().getFecha()));
 
+        if (!Sesion.esAdministrador()) {
+            cmbTipoIncidencia.setDisable(true);
+            txtDescripcion.setDisable(true);
+            tablaIncidencias.setDisable(true);
+            tablaIncidencias.setItems(FXCollections.observableArrayList());
+            lblMensaje.setText("Acceso denegado. Vista disponible solo para administradores.");
+            return;
+        }
+
         cargarIncidencias();
     }
 
     @FXML
     private void filtrarPorTipo() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         TipoIncidencia tipo = cmbTipoIncidencia.getValue();
 
         if (tipo == null) {
@@ -78,12 +93,23 @@ public class IncidenciasController {
 
     @FXML
     private void cargarIncidencias() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            tablaIncidencias.setItems(FXCollections.observableArrayList());
+            return;
+        }
+
         tablaIncidencias.setItems(FXCollections.observableArrayList(sistemaEventos.getIncidencias()));
         lblMensaje.setText("Incidencias cargadas.");
     }
 
     @FXML
     private void registrarIncidencia() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
         String descripcion = txtDescripcion.getText();
         TipoIncidencia tipo = cmbTipoIncidencia.getValue();
 

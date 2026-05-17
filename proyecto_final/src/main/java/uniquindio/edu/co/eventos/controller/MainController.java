@@ -4,15 +4,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import uniquindio.edu.co.eventos.model.Administrador;
 import uniquindio.edu.co.eventos.model.Sesion;
 import uniquindio.edu.co.eventos.model.Usuario;
 
 import java.io.IOException;
 
 public class MainController {
+
+    private static MainController instancia;
 
     @FXML
     private Label lblUsuarioActual;
@@ -21,18 +25,56 @@ public class MainController {
     private StackPane contentArea;
 
     @FXML
-    public void initialize() {
-        Usuario usuario = Sesion.getUsuarioActual();
+    private Button btnMenuEventos;
 
-        if (usuario != null) {
-            lblUsuarioActual.setText(usuario.getNombreCompleto());
-        } else if (Sesion.getAdministradorActual() != null) {
-            lblUsuarioActual.setText(Sesion.getAdministradorActual().getNombreCompleto());
+    @FXML
+    private Button btnMenuCompras;
+
+    @FXML
+    private Button btnMenuUsuarios;
+
+    @FXML
+    private Button btnMenuReportes;
+
+    @FXML
+    private Button btnMenuIncidencias;
+
+    @FXML
+    private Button btnMenuPerfil;
+
+    @FXML
+    private Button btnCerrarSesion;
+
+    @FXML
+    public void initialize() {
+        instancia = this;
+        configurarMenuSegunSesion();
+        mostrarEventos();
+    }
+
+    private void configurarMenuSegunSesion() {
+        Usuario usuario = Sesion.getUsuarioActual();
+        Administrador administrador = Sesion.getAdministradorActual();
+
+        if (Sesion.esAdministrador() && administrador != null) {
+            lblUsuarioActual.setText("Administrador: " + administrador.getNombreCompleto());
+            btnMenuCompras.setText("Compras");
+            mostrarBoton(btnMenuUsuarios, true);
+            mostrarBoton(btnMenuReportes, true);
+            mostrarBoton(btnMenuIncidencias, true);
+        } else if (usuario != null) {
+            lblUsuarioActual.setText("Usuario: " + usuario.getNombreCompleto());
+            btnMenuCompras.setText("Mis compras");
+            mostrarBoton(btnMenuUsuarios, false);
+            mostrarBoton(btnMenuReportes, false);
+            mostrarBoton(btnMenuIncidencias, false);
         } else {
             lblUsuarioActual.setText("Sin sesion activa");
+            btnMenuCompras.setText("Compras");
+            mostrarBoton(btnMenuUsuarios, false);
+            mostrarBoton(btnMenuReportes, false);
+            mostrarBoton(btnMenuIncidencias, false);
         }
-
-        mostrarEventos();
     }
 
     @FXML
@@ -47,16 +89,28 @@ public class MainController {
 
     @FXML
     private void mostrarUsuarios() {
+        if (!Sesion.esAdministrador()) {
+            mostrarEventos();
+            return;
+        }
         cargarVista("UsuariosView.fxml");
     }
 
     @FXML
     private void mostrarReportes() {
+        if (!Sesion.esAdministrador()) {
+            mostrarEventos();
+            return;
+        }
         cargarVista("ReportesView.fxml");
     }
 
     @FXML
     private void mostrarIncidencias() {
+        if (!Sesion.esAdministrador()) {
+            mostrarEventos();
+            return;
+        }
         cargarVista("IncidenciasView.fxml");
     }
 
@@ -83,7 +137,7 @@ public class MainController {
         }
     }
 
-    private void cargarVista(String vista) {
+    public void cargarVista(String vista) {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/uniquindio/edu/co/eventos/view/" + vista)
@@ -93,5 +147,16 @@ public class MainController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void abrirVistaCentral(String vista) {
+        if (instancia != null) {
+            instancia.cargarVista(vista);
+        }
+    }
+
+    private void mostrarBoton(Button button, boolean visible) {
+        button.setVisible(visible);
+        button.setManaged(visible);
     }
 }
