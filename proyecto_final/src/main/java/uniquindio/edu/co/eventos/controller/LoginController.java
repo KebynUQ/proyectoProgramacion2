@@ -71,7 +71,7 @@ public class LoginController {
                 lblMensaje.setText("Correo o contrasena incorrectos.");
             }
         }
-    }
+    } 
 
     @FXML
     private void registrarUsuario() {
