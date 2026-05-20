@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
@@ -18,18 +23,43 @@
 
     <Label fx:id="lblTituloVista" text="Mis compras" styleClass="section-title"/>
 
+    <HBox fx:id="boxFiltros" spacing="10">
+        <TextField fx:id="txtFiltroEvento" promptText="Buscar por evento..." HBox.hgrow="ALWAYS"/>
+        <DatePicker fx:id="dpFiltroFecha" promptText="Fecha"/>
+        <ComboBox fx:id="cmbFiltroEstado" prefWidth="220"/>
+        <Button text="Filtrar" onAction="#filtrarCompras" styleClass="primary-button"/>
+        <Button text="Limpiar" onAction="#limpiarFiltros" styleClass="secondary-button"/>
+    </HBox>
+
     <TableView fx:id="tablaCompras" prefHeight="420">
         <columns>
-            <TableColumn fx:id="colIdCompra" text="ID" prefWidth="100"/>
+            <TableColumn fx:id="colIdCompra" text="ID" prefWidth="120"/>
             <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="160"/>
-            <TableColumn fx:id="colEvento" text="Evento" prefWidth="180"/>
-            <TableColumn fx:id="colZona" text="Zona" prefWidth="120"/>
-            <TableColumn fx:id="colAsiento" text="Asiento" prefWidth="140"/>
-            <TableColumn fx:id="colTotal" text="Total" prefWidth="110"/>
-            <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
-            <TableColumn fx:id="colFecha" text="Fecha" prefWidth="180"/>
+            <TableColumn fx:id="colEvento" text="Evento" prefWidth="200"/>
+            <TableColumn fx:id="colTotal" text="Total" prefWidth="120"/>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="150"/>
+            <TableColumn fx:id="colSolicitud" text="Solicitud" prefWidth="320"/>
         </columns>
     </TableView>
+
+    <HBox fx:id="boxAccionesUsuario" spacing="10">
+        <Button text="Ver detalle" onAction="#verDetalleCompra" styleClass="secondary-button"/>
+        <Button text="Solicitar modificación" onAction="#solicitarModificacion" styleClass="secondary-button"/>
+        <Button text="Solicitar cancelación" onAction="#solicitarCancelacion" styleClass="danger-button"/>
+        <Button text="Solicitar confirmación de pago" onAction="#solicitarConfirmacionPago" styleClass="primary-button"/>
+        <Button text="Descargar comprobante" onAction="#descargarComprobante" styleClass="btn-primary"/>
+    </HBox>
+
+    <HBox fx:id="boxAccionesAdmin" spacing="10">
+        <Button text="Ver detalle" onAction="#verDetalleCompra" styleClass="secondary-button"/>
+        <Button text="Aprobar modificación" onAction="#aprobarModificacion" styleClass="secondary-button"/>
+        <Button text="Aprobar cancelación" onAction="#aprobarCancelacion" styleClass="danger-button"/>
+        <Button text="Confirmar pago" onAction="#confirmarPagoComoAdmin" styleClass="primary-button"/>
+        <Button text="Cancelar compra" onAction="#cancelarCompraComoAdmin" styleClass="danger-button"/>
+        <Button text="Registrar reembolso" onAction="#registrarReembolso" styleClass="secondary-button"/>
+        <Button text="Rechazar solicitud" onAction="#rechazarSolicitud" styleClass="secondary-button"/>
+        <Button text="Descargar comprobante" onAction="#descargarComprobante" styleClass="btn-primary"/>
+    </HBox>
 
     <Label fx:id="lblMensaje" text="" styleClass="info-label"/>
 

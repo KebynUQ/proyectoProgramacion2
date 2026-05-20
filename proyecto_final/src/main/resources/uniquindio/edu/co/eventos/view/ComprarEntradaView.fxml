@@ -51,7 +51,7 @@
 
     <HBox spacing="10">
         <Button text="Calcular total" onAction="#calcularTotal" styleClass="secondary-button"/>
-        <Button text="Confirmar compra" onAction="#confirmarCompra" styleClass="primary-button"/>
+        <Button fx:id="btnGuardarCompra" text="Guardar compra" onAction="#guardarCompra" styleClass="primary-button"/>
         <Button text="Volver" onAction="#volver" styleClass="secondary-button"/>
         <Label text="Total:" styleClass="bold-label"/>
         <Label fx:id="lblTotal" text="0 COP"/>

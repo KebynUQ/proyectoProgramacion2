@@ -6,6 +6,7 @@ public class Sesion {
     private static Administrador administradorActual;
     private static String tipoUsuario;
     private static Evento eventoSeleccionadoParaCompra;
+    private static Compra compraSeleccionadaParaEditar;
 
     private Sesion() {
     }
@@ -15,6 +16,7 @@ public class Sesion {
         administradorActual = null;
         tipoUsuario = "USUARIO";
         eventoSeleccionadoParaCompra = null;
+        compraSeleccionadaParaEditar = null;
     }
 
     public static void iniciarSesionAdministrador(Administrador administrador) {
@@ -22,6 +24,7 @@ public class Sesion {
         usuarioActual = null;
         tipoUsuario = "ADMINISTRADOR";
         eventoSeleccionadoParaCompra = null;
+        compraSeleccionadaParaEditar = null;
     }
 
     public static void cerrarSesion() {
@@ -29,6 +32,7 @@ public class Sesion {
         administradorActual = null;
         tipoUsuario = null;
         eventoSeleccionadoParaCompra = null;
+        compraSeleccionadaParaEditar = null;
     }
 
     public static boolean haySesionActiva() {
@@ -61,5 +65,17 @@ public class Sesion {
 
     public static void setEventoSeleccionadoParaCompra(Evento evento) {
         eventoSeleccionadoParaCompra = evento;
+    }
+
+    public static Compra getCompraSeleccionadaParaEditar() {
+        return compraSeleccionadaParaEditar;
+    }
+
+    public static void setCompraSeleccionadaParaEditar(Compra compra) {
+        compraSeleccionadaParaEditar = compra;
+    }
+
+    public static void limpiarCompraSeleccionadaParaEditar() {
+        compraSeleccionadaParaEditar = null;
     }
 }

@@ -45,6 +45,7 @@
             <Button fx:id="btnMenuEventos" text="Eventos" onAction="#mostrarEventos" prefWidth="160" styleClass="menu-button"/>
             <Button fx:id="btnMenuCompras" text="Compras" onAction="#mostrarCompras" prefWidth="160" styleClass="menu-button"/>
             <Button fx:id="btnMenuUsuarios" text="Usuarios" onAction="#mostrarUsuarios" prefWidth="160" styleClass="menu-button"/>
+            <Button fx:id="btnMenuRecintos" text="Recintos" onAction="#mostrarRecintos" prefWidth="160" styleClass="menu-button"/>
             <Button fx:id="btnMenuReportes" text="Reportes" onAction="#mostrarReportes" prefWidth="160" styleClass="menu-button"/>
             <Button fx:id="btnMenuIncidencias" text="Incidencias" onAction="#mostrarIncidencias" prefWidth="160" styleClass="menu-button"/>
             <Button fx:id="btnMenuPerfil" text="Perfil" onAction="#mostrarPerfil" prefWidth="160" styleClass="menu-button"/>

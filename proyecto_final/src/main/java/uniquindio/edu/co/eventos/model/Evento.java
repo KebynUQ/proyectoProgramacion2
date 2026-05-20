@@ -15,9 +15,15 @@ public class Evento {
     private EstadoEvento estadoEvento;
     private Recinto recinto;
     private double precioBase;
+    private String politicaCancelacion;
+    private String politicaReembolso;
+    private String reglasGenerales;
 
     public Evento() {
         this.estadoEvento = EstadoEvento.BORRADOR;
+        this.politicaCancelacion = "Cancelacion permitida hasta 24 horas antes del evento.";
+        this.politicaReembolso = "Reembolso sujeto a politica del evento.";
+        this.reglasGenerales = "La entrada debe presentarse activa el dia del evento.";
     }
 
     public Evento(String idEvento, String nombre, String categoria, String descripcion,
@@ -31,6 +37,9 @@ public class Evento {
         this.recinto = recinto;
         this.precioBase = precioBase;
         this.estadoEvento = EstadoEvento.BORRADOR;
+        this.politicaCancelacion = "Cancelacion permitida hasta 24 horas antes del evento.";
+        this.politicaReembolso = "Reembolso sujeto a politica del evento.";
+        this.reglasGenerales = "La entrada debe presentarse activa el dia del evento.";
     }
 
     public void habilitar() {
@@ -136,6 +145,30 @@ public class Evento {
 
     public void setPrecioBase(double precioBase) {
         this.precioBase = precioBase;
+    }
+
+    public String getPoliticaCancelacion() {
+        return politicaCancelacion;
+    }
+
+    public void setPoliticaCancelacion(String politicaCancelacion) {
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public String getPoliticaReembolso() {
+        return politicaReembolso;
+    }
+
+    public void setPoliticaReembolso(String politicaReembolso) {
+        this.politicaReembolso = politicaReembolso;
+    }
+
+    public String getReglasGenerales() {
+        return reglasGenerales;
+    }
+
+    public void setReglasGenerales(String reglasGenerales) {
+        this.reglasGenerales = reglasGenerales;
     }
 
     @Override

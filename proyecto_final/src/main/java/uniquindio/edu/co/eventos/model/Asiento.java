@@ -41,11 +41,15 @@ public class Asiento {
     }
 
     public void inhabilitar() {
-        estadoAsiento = EstadoAsiento.BLOQUEADO;
+        if (estadoAsiento != EstadoAsiento.VENDIDO) {
+            estadoAsiento = EstadoAsiento.BLOQUEADO;
+        }
     }
 
     public void desocupar() {
-        estadoAsiento = EstadoAsiento.DISPONIBLE;
+        if (estadoAsiento != EstadoAsiento.VENDIDO) {
+            estadoAsiento = EstadoAsiento.DISPONIBLE;
+        }
     }
 
     public void liberar() {
@@ -54,6 +58,10 @@ public class Asiento {
 
     public boolean estaDisponible() {
         return estadoAsiento == EstadoAsiento.DISPONIBLE;
+    }
+
+    public boolean estaBloqueado() {
+        return estadoAsiento == EstadoAsiento.BLOQUEADO;
     }
 
     public String getIdAsiento() {

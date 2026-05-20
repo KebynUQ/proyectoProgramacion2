@@ -17,7 +17,7 @@ public class CompraConfirmada implements EstadoCompraBehavior {
 
     @Override
     public void cancelar(Compra compra) {
-        compra.cambiarEstado(EstadoCompra.CANCELADA);
+        System.out.println("No se puede cancelar una compra confirmada.");
     }
 
     @Override

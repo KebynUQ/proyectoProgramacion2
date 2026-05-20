@@ -23,11 +23,20 @@ import uniquindio.edu.co.eventos.model.Evento;
 import uniquindio.edu.co.eventos.model.Recinto;
 import uniquindio.edu.co.eventos.model.Sesion;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
+import uniquindio.edu.co.eventos.model.Zona;
+import uniquindio.edu.co.eventos.model.enums.EstadoAsiento;
 import uniquindio.edu.co.eventos.model.enums.EstadoEvento;
+import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+import uniquindio.edu.co.eventos.patterns.creational.ConciertoFactory;
+import uniquindio.edu.co.eventos.patterns.creational.ConferenciaFactory;
+import uniquindio.edu.co.eventos.patterns.creational.EventoFactory;
+import uniquindio.edu.co.eventos.patterns.creational.TeatroFactory;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +45,7 @@ public class EventosController {
     private static final List<String> CATEGORIAS_EVENTO = List.of(
             "Concierto",
             "Teatro",
-            "Conferencia",
-            "Deportivo",
-            "Cultural",
-            "Academico",
-            "Otro"
+            "Conferencia"
     );
 
     private static final String CATEGORIA_TODAS = "Todas";
@@ -49,13 +54,19 @@ public class EventosController {
     private Label lblTituloVista;
 
     @FXML
-    private TextField txtBuscar;
+    private TextField txtBuscarEvento;
 
     @FXML
-    private ComboBox<String> cmbCategoria;
+    private ComboBox<String> cmbCategoriaFiltro;
 
     @FXML
-    private TextField txtCiudad;
+    private TextField txtCiudadFiltro;
+
+    @FXML
+    private DatePicker dpFechaFiltro;
+
+    @FXML
+    private TextField txtPrecioFiltro;
 
     @FXML
     private VBox panelAdministracion;
@@ -177,34 +188,20 @@ public class EventosController {
 
     @FXML
     private void filtrarEventos() {
-        String texto = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
-        String categoria = cmbCategoria.getValue();
-        String ciudad = txtCiudad.getText() == null ? "" : txtCiudad.getText().trim().toLowerCase();
-
-        ArrayList<Evento> resultado = new ArrayList<>();
-
-        for (Evento evento : obtenerEventosVisibles()) {
-            boolean coincideTexto = texto.isEmpty() || evento.getNombre().toLowerCase().contains(texto);
-            boolean coincideCategoria = categoria == null
-                    || categoria.isBlank()
-                    || CATEGORIA_TODAS.equals(categoria)
-                    || evento.getCategoria().equalsIgnoreCase(categoria);
-            boolean coincideCiudad = ciudad.isEmpty() || evento.getCiudad().toLowerCase().contains(ciudad);
-
-            if (coincideTexto && coincideCategoria && coincideCiudad) {
-                resultado.add(evento);
-            }
+        if (obtenerPrecioMaximoFiltro() == null && txtPrecioFiltro.getText() != null && !txtPrecioFiltro.getText().trim().isBlank()) {
+            return;
         }
 
-        actualizarVistaConEventos(resultado);
-        lblMensaje.setText("Se encontraron " + resultado.size() + " eventos.");
+        aplicarFiltroYMostrar();
     }
 
     @FXML
     private void limpiarFiltros() {
-        txtBuscar.clear();
-        txtCiudad.clear();
-        cmbCategoria.setValue(CATEGORIA_TODAS);
+        txtBuscarEvento.clear();
+        txtCiudadFiltro.clear();
+        cmbCategoriaFiltro.setValue(CATEGORIA_TODAS);
+        dpFechaFiltro.setValue(null);
+        txtPrecioFiltro.clear();
         aplicarFiltroYMostrar();
         lblMensaje.setText("");
     }
@@ -292,6 +289,7 @@ public class EventosController {
         aplicarFiltroYMostrar();
         limpiarFormulario();
         lblMensaje.setText("Evento eliminado correctamente.");
+        sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_EVENTO, "Se elimino el evento " + evento.getNombre());
     }
 
     @FXML
@@ -339,6 +337,11 @@ public class EventosController {
         evento.cambiarEstado(estado);
         tablaEventos.refresh();
         lblMensaje.setText("Estado actualizado a " + estado + ".");
+        if (estado == EstadoEvento.CANCELADO) {
+            sistemaEventos.registrarIncidencia(TipoIncidencia.CANCELACION_EVENTO, "Se cancelo el evento " + evento.getNombre());
+        } else {
+            sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_EVENTO, "El evento " + evento.getNombre() + " cambio a " + estado);
+        }
     }
 
     private void cargarEventos() {
@@ -469,7 +472,7 @@ public class EventosController {
         }
 
         Evento evento = eventoExistente == null
-                ? new Evento("EVE-" + System.currentTimeMillis(), nombre, categoria, descripcion, ciudad, fechaHora, recinto, precioBase)
+                ? crearEventoConFactory(nombre, categoria, descripcion, ciudad, fechaHora, recinto, precioBase)
                 : eventoExistente;
 
         evento.setNombre(nombre);
@@ -481,6 +484,28 @@ public class EventosController {
         evento.setRecinto(recinto);
 
         return evento;
+    }
+
+    private Evento crearEventoConFactory(String nombre, String categoria, String descripcion, String ciudad,
+                                         LocalDateTime fechaHora, Recinto recinto, double precioBase) {
+        EventoFactory factory;
+        if ("Teatro".equalsIgnoreCase(categoria)) {
+            factory = new TeatroFactory();
+        } else if ("Conferencia".equalsIgnoreCase(categoria)) {
+            factory = new ConferenciaFactory();
+        } else {
+            factory = new ConciertoFactory();
+        }
+
+        return factory.crearEvento(
+                "EVE-" + System.currentTimeMillis(),
+                nombre,
+                descripcion,
+                ciudad,
+                fechaHora,
+                recinto,
+                precioBase
+        );
     }
 
     private boolean validarAdministrador() {
@@ -514,8 +539,8 @@ public class EventosController {
         categoriasFiltro.add(CATEGORIA_TODAS);
         categoriasFiltro.addAll(CATEGORIAS_EVENTO);
 
-        cmbCategoria.setItems(FXCollections.observableArrayList(categoriasFiltro));
-        cmbCategoria.setValue(CATEGORIA_TODAS);
+        cmbCategoriaFiltro.setItems(FXCollections.observableArrayList(categoriasFiltro));
+        cmbCategoriaFiltro.setValue(CATEGORIA_TODAS);
         cmbCategoriaFormulario.setItems(FXCollections.observableArrayList(CATEGORIAS_EVENTO));
     }
 
@@ -529,6 +554,7 @@ public class EventosController {
                 txtPrecioBase.setText(oldValue);
             }
         });
+
     }
 
     private void mostrarVistaAdministrador() {
@@ -566,25 +592,72 @@ public class EventosController {
     }
 
     private ArrayList<Evento> obtenerEventosFiltrados() {
-        String texto = txtBuscar.getText() == null ? "" : txtBuscar.getText().trim().toLowerCase();
-        String categoria = cmbCategoria.getValue();
-        String ciudad = txtCiudad.getText() == null ? "" : txtCiudad.getText().trim().toLowerCase();
         ArrayList<Evento> resultado = new ArrayList<>();
+        Double precioMaximo = obtenerPrecioMaximoFiltro();
+
+        if (precioMaximo == null && txtPrecioFiltro.getText() != null && !txtPrecioFiltro.getText().trim().isBlank()) {
+            return resultado;
+        }
 
         for (Evento evento : obtenerEventosVisibles()) {
-            boolean coincideTexto = texto.isEmpty() || evento.getNombre().toLowerCase().contains(texto);
-            boolean coincideCategoria = categoria == null
-                    || categoria.isBlank()
-                    || CATEGORIA_TODAS.equals(categoria)
-                    || evento.getCategoria().equalsIgnoreCase(categoria);
-            boolean coincideCiudad = ciudad.isEmpty() || evento.getCiudad().toLowerCase().contains(ciudad);
-
-            if (coincideTexto && coincideCategoria && coincideCiudad) {
+            if (cumpleFiltros(evento, precioMaximo)) {
                 resultado.add(evento);
             }
         }
 
+        lblMensaje.setText("Se encontraron " + resultado.size() + " eventos.");
         return resultado;
+    }
+
+    private boolean cumpleFiltros(Evento evento, Double precioMaximo) {
+        String texto = txtBuscarEvento.getText() == null ? "" : txtBuscarEvento.getText().trim().toLowerCase();
+        String categoria = cmbCategoriaFiltro.getValue();
+        String ciudad = txtCiudadFiltro.getText() == null ? "" : txtCiudadFiltro.getText().trim().toLowerCase();
+        LocalDate fechaFiltro = dpFechaFiltro.getValue();
+
+        boolean coincideTexto = texto.isEmpty() || evento.getNombre().toLowerCase().contains(texto);
+        boolean coincideCategoria = categoria == null
+                || categoria.isBlank()
+                || CATEGORIA_TODAS.equals(categoria)
+                || normalizarTexto(evento.getCategoria()).equals(normalizarTexto(categoria));
+        boolean coincideCiudad = ciudad.isEmpty() || evento.getCiudad().toLowerCase().contains(ciudad);
+        boolean coincideFecha = fechaFiltro == null
+                || (evento.getFechaHora() != null && evento.getFechaHora().toLocalDate().equals(fechaFiltro));
+        boolean coincidePrecio = precioMaximo == null || evento.getPrecioBase() <= precioMaximo;
+
+        return coincideTexto && coincideCategoria && coincideCiudad && coincideFecha && coincidePrecio;
+    }
+
+    private Double obtenerPrecioMaximoFiltro() {
+        String precioTexto = txtPrecioFiltro.getText() == null ? "" : txtPrecioFiltro.getText().trim();
+
+        if (precioTexto.isBlank()) {
+            return null;
+        }
+
+        double precioMaximo;
+        try {
+            precioMaximo = Double.parseDouble(precioTexto);
+        } catch (NumberFormatException e) {
+            lblMensaje.setText("El precio debe ser un numero valido.");
+            return null;
+        }
+
+        if (precioMaximo < 0) {
+            lblMensaje.setText("El precio no puede ser negativo.");
+            return null;
+        }
+
+        return precioMaximo;
+    }
+
+    private String normalizarTexto(String texto) {
+        if (texto == null) {
+            return "";
+        }
+
+        String normalizado = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        return normalizado.replaceAll("\\p{M}", "").toLowerCase();
     }
 
     private void actualizarVistaConEventos(List<Evento> eventos) {
@@ -644,19 +717,101 @@ public class EventosController {
         alert.setTitle("Detalle del evento");
         alert.setHeaderText(evento.getNombre());
 
-        String recinto = evento.getRecinto() == null ? "Sin recinto" : evento.getRecinto().getNombre();
-        String fecha = evento.getFechaHora() == null ? "Sin fecha" : evento.getFechaHora().toString();
-
-        alert.setContentText(
-                "Categoria: " + evento.getCategoria() + "\n"
-                        + "Ciudad: " + evento.getCiudad() + "\n"
-                        + "Fecha: " + fecha + "\n"
-                        + "Precio base: " + evento.getPrecioBase() + " COP\n"
-                        + "Descripcion: " + evento.getDescripcion() + "\n"
-                        + "Recinto: " + recinto + "\n"
-                        + "Estado: " + evento.getEstadoEvento().name()
-        );
+        String detalle = construirDetalleEvento(evento);
+        alert.setContentText(detalle);
         alert.showAndWait();
+    }
+
+    private String construirDetalleEvento(Evento evento) {
+        Recinto recinto = evento.getRecinto();
+        String fecha = evento.getFechaHora() == null
+                ? "Sin fecha"
+                : evento.getFechaHora().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        String nombreRecinto = recinto == null ? "Sin recinto" : recinto.getNombre();
+        String direccionRecinto = recinto == null || recinto.getDireccion() == null || recinto.getDireccion().isBlank()
+                ? "Sin direccion registrada"
+                : recinto.getDireccion();
+        int aforoTotal = calcularAforoTotal(recinto);
+        String zonasDetalle = construirDetalleZonas(recinto);
+
+        return "Nombre: " + evento.getNombre() + "\n"
+                + "Categoria: " + valorTexto(evento.getCategoria()) + "\n"
+                + "Ciudad: " + valorTexto(evento.getCiudad()) + "\n"
+                + "Fecha: " + fecha + "\n\n"
+                + "Descripcion:\n"
+                + valorTexto(evento.getDescripcion()) + "\n\n"
+                + "Lugar:\n"
+                + nombreRecinto + "\n"
+                + "Direccion: " + direccionRecinto + "\n\n"
+                + "Aforo total:\n"
+                + aforoTotal + " personas\n\n"
+                + "Precio base:\n"
+                + evento.getPrecioBase() + " COP\n\n"
+                + "Zonas y precios:\n"
+                + zonasDetalle + "\n\n"
+                + "Reglas:\n"
+                + "- " + valorTexto(evento.getPoliticaCancelacion()) + "\n"
+                + "- " + valorTexto(evento.getPoliticaReembolso()) + "\n"
+                + "- " + valorTexto(evento.getReglasGenerales()) + "\n\n"
+                + "Estado:\n"
+                + evento.getEstadoEvento().name();
+    }
+
+    private int calcularAforoTotal(Recinto recinto) {
+        if (recinto == null || recinto.getZonas() == null || recinto.getZonas().isEmpty()) {
+            return 0;
+        }
+
+        int aforo = 0;
+        for (Zona zona : recinto.getZonas()) {
+            aforo += zona.getCapacidad();
+        }
+        return aforo;
+    }
+
+    private String construirDetalleZonas(Recinto recinto) {
+        if (recinto == null || recinto.getZonas() == null || recinto.getZonas().isEmpty()) {
+            return "- Sin zonas registradas";
+        }
+
+        StringBuilder detalle = new StringBuilder();
+
+        for (Zona zona : recinto.getZonas()) {
+            int disponibles = obtenerDisponiblesZona(zona);
+            detalle.append("- ")
+                    .append(zona.getNombre())
+                    .append(" | Capacidad: ")
+                    .append(zona.getCapacidad())
+                    .append(" | Disponibles: ")
+                    .append(disponibles)
+                    .append(" | Precio: ")
+                    .append(zona.getPrecioBase())
+                    .append(" COP")
+                    .append("\n");
+        }
+
+        return detalle.toString().trim();
+    }
+
+    private int obtenerDisponiblesZona(Zona zona) {
+        if (zona.getAsientos() == null || zona.getAsientos().isEmpty()) {
+            return zona.getCapacidad();
+        }
+
+        int disponibles = 0;
+        for (int i = 0; i < zona.getAsientos().size(); i++) {
+            if (zona.getAsientos().get(i).getEstadoAsiento() == EstadoAsiento.DISPONIBLE) {
+                disponibles++;
+            }
+        }
+        return disponibles;
+    }
+
+    private String valorTexto(String texto) {
+        if (texto == null || texto.isBlank()) {
+            return "No definido";
+        }
+        return texto;
     }
 
     private void seleccionarEventoParaCompra(Evento evento) {

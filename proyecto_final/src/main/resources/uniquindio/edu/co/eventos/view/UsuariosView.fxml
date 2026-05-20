@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -27,7 +28,28 @@
         <Button text="Cargar todos" onAction="#cargarUsuarios" styleClass="secondary-button"/>
     </HBox>
 
-    <TableView fx:id="tablaUsuarios" prefHeight="400">
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nombre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNombreUsuario" promptText="Nombre completo" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Correo:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <TextField fx:id="txtCorreoUsuario" promptText="correo@uq.edu.co" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+        <Label text="Telefono:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtTelefonoUsuario" promptText="3001234567" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Contrasena:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <TextField fx:id="txtContrasenaUsuario" promptText="1234" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+    </GridPane>
+
+    <HBox spacing="10">
+        <Button text="Crear usuario" onAction="#crearUsuario" styleClass="primary-button"/>
+        <Button text="Actualizar usuario" onAction="#actualizarUsuario" styleClass="secondary-button"/>
+        <Button text="Eliminar usuario" onAction="#eliminarUsuario" styleClass="danger-button"/>
+        <Button text="Limpiar formulario" onAction="#limpiarFormulario" styleClass="secondary-button"/>
+    </HBox>
+
+    <TableView fx:id="tablaUsuarios" prefHeight="360">
         <columns>
             <TableColumn fx:id="colIdUsuario" text="ID" prefWidth="100"/>
             <TableColumn fx:id="colNombre" text="Nombre" prefWidth="220"/>

@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,6 +21,9 @@ public class IncidenciasController {
 
     @FXML
     private ComboBox<TipoIncidencia> cmbTipoIncidencia;
+
+    @FXML
+    private DatePicker dpFechaIncidencia;
 
     @FXML
     private TextArea txtDescripcion;
@@ -101,6 +105,29 @@ public class IncidenciasController {
 
         tablaIncidencias.setItems(FXCollections.observableArrayList(sistemaEventos.getIncidencias()));
         lblMensaje.setText("Incidencias cargadas.");
+    }
+
+    @FXML
+    private void filtrarPorFecha() {
+        if (!Sesion.esAdministrador()) {
+            lblMensaje.setText("Acceso denegado.");
+            return;
+        }
+
+        if (dpFechaIncidencia.getValue() == null) {
+            cargarIncidencias();
+            return;
+        }
+
+        ArrayList<Incidencia> resultado = new ArrayList<>();
+        for (Incidencia incidencia : sistemaEventos.getIncidencias()) {
+            if (incidencia.getFecha() != null && incidencia.getFecha().toLocalDate().equals(dpFechaIncidencia.getValue())) {
+                resultado.add(incidencia);
+            }
+        }
+
+        tablaIncidencias.setItems(FXCollections.observableArrayList(resultado));
+        lblMensaje.setText("Incidencias filtradas por fecha: " + resultado.size());
     }
 
     @FXML

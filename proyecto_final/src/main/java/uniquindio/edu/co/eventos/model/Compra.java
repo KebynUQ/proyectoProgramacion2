@@ -1,6 +1,7 @@
 package uniquindio.edu.co.eventos.model;
 
 import uniquindio.edu.co.eventos.model.enums.EstadoCompra;
+import uniquindio.edu.co.eventos.model.enums.TipoSolicitudCompra;
 import uniquindio.edu.co.eventos.patterns.structural.ServicioAdicional;
 
 import java.time.LocalDateTime;
@@ -17,12 +18,16 @@ public class Compra {
     private ArrayList<Entrada> entradas;
     private ArrayList<ServicioAdicional> serviciosAdicionales;
     private Pago pago;
+    private TipoSolicitudCompra tipoSolicitud;
+    private String mensajeSolicitud;
 
     public Compra() {
         this.fechaCreacion = LocalDateTime.now();
         this.estadoCompra = EstadoCompra.CREADA;
         this.entradas = new ArrayList<>();
         this.serviciosAdicionales = new ArrayList<>();
+        this.tipoSolicitud = TipoSolicitudCompra.SIN_SOLICITUD;
+        this.mensajeSolicitud = "Sin solicitud";
     }
 
     public Compra(String idCompra, Usuario usuario, Evento evento) {
@@ -34,6 +39,8 @@ public class Compra {
         this.entradas = new ArrayList<>();
         this.serviciosAdicionales = new ArrayList<>();
         this.total = 0;
+        this.tipoSolicitud = TipoSolicitudCompra.SIN_SOLICITUD;
+        this.mensajeSolicitud = "Sin solicitud";
     }
 
     public void agregarEntrada(Entrada entrada) {
@@ -84,12 +91,9 @@ public class Compra {
     }
 
     public void confirmarPago() {
-        if (estadoCompra == EstadoCompra.PAGADA) {
+        if (estadoCompra == EstadoCompra.PAGADA || estadoCompra == EstadoCompra.PENDIENTE_PAGO) {
             estadoCompra = EstadoCompra.CONFIRMADA;
-
-            for (Entrada entrada : entradas) {
-                entrada.activar();
-            }
+            activarEntradas();
         }
     }
 
@@ -111,6 +115,39 @@ public class Compra {
 
     public void cambiarEstado(EstadoCompra estadoCompra) {
         this.estadoCompra = estadoCompra;
+    }
+
+    public boolean puedeModificar() {
+        return estadoCompra == EstadoCompra.CREADA
+                || estadoCompra == EstadoCompra.PENDIENTE_PAGO
+                || estadoCompra == EstadoCompra.PENDIENTE_CONFIRMACION;
+    }
+
+    public boolean puedeCancelar() {
+        return estadoCompra == EstadoCompra.CREADA
+                || estadoCompra == EstadoCompra.PENDIENTE_PAGO
+                || estadoCompra == EstadoCompra.PENDIENTE_CONFIRMACION;
+    }
+
+    public boolean puedePagar() {
+        return estadoCompra == EstadoCompra.CREADA
+                || estadoCompra == EstadoCompra.PENDIENTE_PAGO
+                || estadoCompra == EstadoCompra.PENDIENTE_CONFIRMACION;
+    }
+
+    public void activarEntradas() {
+        for (Entrada entrada : entradas) {
+            entrada.activar();
+        }
+    }
+
+    public boolean tieneSolicitudPendiente() {
+        return tipoSolicitud != null && tipoSolicitud != TipoSolicitudCompra.SIN_SOLICITUD;
+    }
+
+    public void limpiarSolicitud() {
+        this.tipoSolicitud = TipoSolicitudCompra.SIN_SOLICITUD;
+        this.mensajeSolicitud = "Sin solicitud";
     }
 
     public String getIdCompra() {
@@ -183,6 +220,22 @@ public class Compra {
 
     public void setPago(Pago pago) {
         this.pago = pago;
+    }
+
+    public TipoSolicitudCompra getTipoSolicitud() {
+        return tipoSolicitud;
+    }
+
+    public void setTipoSolicitud(TipoSolicitudCompra tipoSolicitud) {
+        this.tipoSolicitud = tipoSolicitud;
+    }
+
+    public String getMensajeSolicitud() {
+        return mensajeSolicitud;
+    }
+
+    public void setMensajeSolicitud(String mensajeSolicitud) {
+        this.mensajeSolicitud = mensajeSolicitud;
     }
 
     @Override

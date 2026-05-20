@@ -1,5 +1,7 @@
 package uniquindio.edu.co.eventos.model;
 
+import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+
 import java.util.ArrayList;
 
 public class SistemaEventos {
@@ -32,13 +34,13 @@ public class SistemaEventos {
     }
 
     public void registrarUsuario(Usuario usuario) {
-        if (usuario != null) {
+        if (usuario != null && buscarUsuarioPorCorreo(usuario.getCorreo()) == null) {
             usuarios.add(usuario);
         }
     }
 
     public void registrarAdministrador(Administrador administrador) {
-        if (administrador != null) {
+        if (administrador != null && buscarAdministradorPorCorreo(administrador.getCorreo()) == null) {
             administradores.add(administrador);
         }
     }
@@ -93,6 +95,46 @@ public class SistemaEventos {
         if (incidencia != null) {
             incidencias.add(incidencia);
         }
+    }
+
+    public boolean actualizarUsuario(Usuario usuarioOriginal, String nombre, String correo, String telefono, String contrasena) {
+        if (usuarioOriginal == null) {
+            return false;
+        }
+
+        Usuario existente = buscarUsuarioPorCorreo(correo);
+        if (existente != null && existente != usuarioOriginal) {
+            return false;
+        }
+
+        usuarioOriginal.setNombreCompleto(nombre);
+        usuarioOriginal.setCorreo(correo);
+        usuarioOriginal.setTelefono(telefono);
+        if (contrasena != null && !contrasena.isBlank()) {
+            usuarioOriginal.setContrasena(contrasena);
+        }
+        return true;
+    }
+
+    public boolean eliminarUsuario(Usuario usuario) {
+        return usuario != null && usuarios.remove(usuario);
+    }
+
+    public boolean eliminarEvento(Evento evento) {
+        return evento != null && eventos.remove(evento);
+    }
+
+    public boolean eliminarRecinto(Recinto recinto) {
+        return recinto != null && recintos.remove(recinto);
+    }
+
+    public Administrador buscarAdministradorPorCorreo(String correo) {
+        for (Administrador administrador : administradores) {
+            if (administrador.getCorreo().equalsIgnoreCase(correo)) {
+                return administrador;
+            }
+        }
+        return null;
     }
 
     public ArrayList<Evento> listarEventos() {
@@ -172,6 +214,19 @@ public class SistemaEventos {
             }
         }
         return null;
+    }
+
+    public Recinto buscarRecintoPorId(String idRecinto) {
+        for (Recinto recinto : recintos) {
+            if (recinto.getIdRecinto().equals(idRecinto)) {
+                return recinto;
+            }
+        }
+        return null;
+    }
+
+    public void registrarIncidencia(TipoIncidencia tipo, String descripcion) {
+        agregarIncidencia(new Incidencia("INC-" + System.currentTimeMillis(), tipo, descripcion));
     }
 
     public ArrayList<Usuario> getUsuarios() {

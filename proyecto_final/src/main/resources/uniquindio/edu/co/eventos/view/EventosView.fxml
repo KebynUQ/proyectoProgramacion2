@@ -27,9 +27,11 @@
     <Label fx:id="lblTituloVista" text="Gestion de Eventos" styleClass="section-title"/>
 
     <HBox spacing="10">
-        <TextField fx:id="txtBuscar" promptText="Buscar evento..." prefWidth="250"/>
-        <ComboBox fx:id="cmbCategoria" promptText="Categoria" prefWidth="150"/>
-        <TextField fx:id="txtCiudad" promptText="Ciudad" prefWidth="150"/>
+        <TextField fx:id="txtBuscarEvento" promptText="Buscar evento..." prefWidth="220"/>
+        <ComboBox fx:id="cmbCategoriaFiltro" promptText="Categoria" prefWidth="140"/>
+        <TextField fx:id="txtCiudadFiltro" promptText="Ciudad" prefWidth="140"/>
+        <DatePicker fx:id="dpFechaFiltro" promptText="Fecha" prefWidth="140"/>
+        <TextField fx:id="txtPrecioFiltro" promptText="Precio máximo" prefWidth="140"/>
         <Button text="Filtrar" onAction="#filtrarEventos" styleClass="primary-button"/>
         <Button text="Limpiar" onAction="#limpiarFiltros" styleClass="secondary-button"/>
     </HBox>

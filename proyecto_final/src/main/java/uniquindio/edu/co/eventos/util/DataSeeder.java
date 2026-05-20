@@ -108,6 +108,9 @@ public class DataSeeder {
                 recintoPrincipal,
                 30000
         );
+        concierto.setPoliticaCancelacion("Cancelacion permitida hasta 24 horas antes del evento.");
+        concierto.setPoliticaReembolso("Reembolso sujeto a revision del estado de la compra.");
+        concierto.setReglasGenerales("La entrada debe presentarse activa el dia del evento.");
 
         Evento teatro = teatroFactory.crearEvento(
                 "EVE-002",
@@ -118,6 +121,9 @@ public class DataSeeder {
                 recintoPrincipal,
                 25000
         );
+        teatro.setPoliticaCancelacion("Cancelacion permitida hasta 12 horas antes del evento.");
+        teatro.setPoliticaReembolso("Reembolso del 80% si se solicita dentro del plazo.");
+        teatro.setReglasGenerales("No se permite el ingreso una vez iniciada la funcion.");
 
         Evento conferencia = conferenciaFactory.crearEvento(
                 "EVE-003",
@@ -128,6 +134,9 @@ public class DataSeeder {
                 recintoPrincipal,
                 20000
         );
+        conferencia.setPoliticaCancelacion("Cancelacion permitida hasta 48 horas antes del evento.");
+        conferencia.setPoliticaReembolso("Reembolso total por cancelacion oficial del organizador.");
+        conferencia.setReglasGenerales("Presentar documento de identidad junto con la entrada.");
 
         concierto.cambiarEstado(EstadoEvento.PUBLICADO);
         teatro.cambiarEstado(EstadoEvento.PUBLICADO);

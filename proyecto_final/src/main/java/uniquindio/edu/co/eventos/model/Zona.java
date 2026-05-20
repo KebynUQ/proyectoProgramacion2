@@ -67,6 +67,10 @@ public class Zona {
         return disponibles;
     }
 
+    public ArrayList<Asiento> consultarTodosLosAsientos() {
+        return asientos;
+    }
+
     public double calcularDisponibilidad() {
         if (asientos.isEmpty()) {
             return 0;
