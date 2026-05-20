@@ -1,6 +1,8 @@
 package uniquindio.edu.co.eventos.patterns.behavioral;
 
+import uniquindio.edu.co.eventos.model.Notificacion;
+
 public interface Observador {
 
-    void actualizar(String mensaje);
+    void actualizar(Notificacion notificacion);
 }

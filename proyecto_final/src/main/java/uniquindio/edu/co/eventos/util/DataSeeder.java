@@ -6,12 +6,14 @@ import uniquindio.edu.co.eventos.model.Compra;
 import uniquindio.edu.co.eventos.model.Entrada;
 import uniquindio.edu.co.eventos.model.Evento;
 import uniquindio.edu.co.eventos.model.Incidencia;
+import uniquindio.edu.co.eventos.model.Notificacion;
 import uniquindio.edu.co.eventos.model.Recinto;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
 import uniquindio.edu.co.eventos.model.Usuario;
 import uniquindio.edu.co.eventos.model.Zona;
 import uniquindio.edu.co.eventos.model.enums.EstadoEvento;
 import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+import uniquindio.edu.co.eventos.model.enums.TipoNotificacion;
 import uniquindio.edu.co.eventos.patterns.creational.ConciertoFactory;
 import uniquindio.edu.co.eventos.patterns.creational.ConferenciaFactory;
 import uniquindio.edu.co.eventos.patterns.creational.TeatroFactory;
@@ -33,6 +35,7 @@ public class DataSeeder {
         cargarUsuarios(sistema);
         cargarEventos(sistema);
         cargarIncidencias(sistema);
+        cargarNotificacionesIniciales(sistema);
     }
 
     private static void cargarUsuarios(SistemaEventos sistema) {
@@ -200,5 +203,32 @@ public class DataSeeder {
         );
 
         sistema.agregarIncidencia(incidencia);
+    }
+
+    private static void cargarNotificacionesIniciales(SistemaEventos sistema) {
+        if (!sistema.getUsuarios().isEmpty()) {
+            Usuario usuario = sistema.getUsuarios().get(0);
+            GestorNotificaciones.getInstancia().guardarNotificacion(
+                    new Notificacion(
+                            "NOT-001",
+                            "Bienvenido",
+                            "Tu cuenta fue creada correctamente.",
+                            usuario.getIdUsuario(),
+                            TipoNotificacion.SISTEMA
+                    )
+            );
+        }
+
+        if (!sistema.getAdministradores().isEmpty()) {
+            GestorNotificaciones.getInstancia().guardarNotificacion(
+                    new Notificacion(
+                            "NOT-002",
+                            "Sistema listo",
+                            "La carga inicial de datos finalizo correctamente.",
+                            sistema.getAdministradores().get(0).getIdAdministrador(),
+                            TipoNotificacion.SISTEMA
+                    )
+            );
+        }
     }
 }

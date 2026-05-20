@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="uniquindio.edu.co.eventos.controller.NotificacionesController"
+      spacing="15"
+      stylesheets="@../css/styles.css"
+      styleClass="view-container">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Notificaciones" styleClass="section-title"/>
+
+    <TableView fx:id="tablaNotificaciones" prefHeight="430">
+        <columns>
+            <TableColumn fx:id="colTitulo" text="Titulo" prefWidth="180"/>
+            <TableColumn fx:id="colMensaje" text="Mensaje" prefWidth="430"/>
+            <TableColumn fx:id="colFecha" text="Fecha" prefWidth="180"/>
+            <TableColumn fx:id="colTipo" text="Tipo" prefWidth="120"/>
+            <TableColumn fx:id="colEstado" text="Estado" prefWidth="120"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <Button text="Ver detalle" onAction="#verDetalle" styleClass="secondary-button"/>
+        <Button text="Marcar como leida" onAction="#marcarComoLeida" styleClass="primary-button"/>
+        <Button text="Actualizar" onAction="#actualizarNotificaciones" styleClass="secondary-button"/>
+        <Button text="Limpiar leidas" onAction="#limpiarLeidas" styleClass="danger-button"/>
+    </HBox>
+
+    <Label fx:id="lblMensaje" text="" styleClass="info-label"/>
+
+</VBox>

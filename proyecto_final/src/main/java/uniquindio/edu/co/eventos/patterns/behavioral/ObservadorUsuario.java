@@ -1,6 +1,8 @@
 package uniquindio.edu.co.eventos.patterns.behavioral;
 
+import uniquindio.edu.co.eventos.model.Notificacion;
 import uniquindio.edu.co.eventos.model.Usuario;
+import uniquindio.edu.co.eventos.util.GestorNotificaciones;
 
 public class ObservadorUsuario implements Observador {
 
@@ -11,9 +13,14 @@ public class ObservadorUsuario implements Observador {
     }
 
     @Override
-    public void actualizar(String mensaje) {
-        if (usuario != null) {
-            usuario.recibirNotificacion(mensaje);
+    public void actualizar(Notificacion notificacion) {
+        if (usuario == null || notificacion == null) {
+            return;
+        }
+
+        if (usuario.getIdUsuario() != null && usuario.getIdUsuario().equals(notificacion.getIdUsuarioDestino())) {
+            GestorNotificaciones.getInstancia().guardarNotificacion(notificacion);
+            usuario.recibirNotificacion(notificacion);
         }
     }
 

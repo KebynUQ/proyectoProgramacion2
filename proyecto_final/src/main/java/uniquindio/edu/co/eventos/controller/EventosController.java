@@ -20,13 +20,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import uniquindio.edu.co.eventos.model.Evento;
+import uniquindio.edu.co.eventos.model.Notificacion;
 import uniquindio.edu.co.eventos.model.Recinto;
 import uniquindio.edu.co.eventos.model.Sesion;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
+import uniquindio.edu.co.eventos.model.Usuario;
 import uniquindio.edu.co.eventos.model.Zona;
 import uniquindio.edu.co.eventos.model.enums.EstadoAsiento;
 import uniquindio.edu.co.eventos.model.enums.EstadoEvento;
 import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+import uniquindio.edu.co.eventos.model.enums.TipoNotificacion;
+import uniquindio.edu.co.eventos.patterns.behavioral.ObservableEvento;
+import uniquindio.edu.co.eventos.patterns.behavioral.ObservadorUsuario;
 import uniquindio.edu.co.eventos.patterns.creational.ConciertoFactory;
 import uniquindio.edu.co.eventos.patterns.creational.ConferenciaFactory;
 import uniquindio.edu.co.eventos.patterns.creational.EventoFactory;
@@ -342,6 +347,7 @@ public class EventosController {
         } else {
             sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_EVENTO, "El evento " + evento.getNombre() + " cambio a " + estado);
         }
+        notificarCambioEstadoEvento(evento, estado);
     }
 
     private void cargarEventos() {
@@ -812,6 +818,31 @@ public class EventosController {
             return "No definido";
         }
         return texto;
+    }
+
+    private void notificarCambioEstadoEvento(Evento evento, EstadoEvento estado) {
+        if (evento == null) {
+            return;
+        }
+
+        ObservableEvento observableEvento = new ObservableEvento(evento);
+        for (Usuario usuario : sistemaEventos.getUsuarios()) {
+            observableEvento.agregarObservador(new ObservadorUsuario(usuario));
+        }
+
+        for (Usuario usuario : sistemaEventos.getUsuarios()) {
+            if (usuario.getIdUsuario() == null) {
+                continue;
+            }
+            Notificacion notificacion = new Notificacion(
+                    "NOT-" + System.currentTimeMillis() + "-" + usuario.getIdUsuario(),
+                    "Cambio de estado del evento",
+                    "El evento " + evento.getNombre() + " cambió a estado " + estado + ".",
+                    usuario.getIdUsuario(),
+                    TipoNotificacion.EVENTO
+            );
+            observableEvento.notificarObservadores(notificacion);
+        }
     }
 
     private void seleccionarEventoParaCompra(Evento evento) {

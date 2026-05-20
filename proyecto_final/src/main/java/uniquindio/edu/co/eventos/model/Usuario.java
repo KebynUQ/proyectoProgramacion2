@@ -63,6 +63,12 @@ public class Usuario {
         notificaciones.add(mensaje);
     }
 
+    public void recibirNotificacion(Notificacion notificacion) {
+        if (notificacion != null) {
+            recibirNotificacion(notificacion.getTitulo() + ": " + notificacion.getMensaje());
+        }
+    }
+
     public String getIdUsuario() {
         return idUsuario;
     }

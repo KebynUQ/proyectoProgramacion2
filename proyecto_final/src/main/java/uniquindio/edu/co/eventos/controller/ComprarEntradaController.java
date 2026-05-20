@@ -147,7 +147,7 @@ public class ComprarEntradaController {
         Asiento asiento = cmbAsiento.getValue();
         String metodoPago = cmbMetodoPago.getValue();
 
-        if (!validarCamposBase(haySesion, zona, asiento)) {
+        if (!validarCamposBase(haySesion, zona, asiento, metodoPago)) {
             return;
         }
 
@@ -235,7 +235,7 @@ public class ComprarEntradaController {
         return servicios;
     }
 
-    private boolean validarCamposBase(boolean haySesion, Zona zona, Asiento asiento) {
+    private boolean validarCamposBase(boolean haySesion, Zona zona, Asiento asiento, String metodoPago) {
         if (eventoSeleccionado == null) {
             lblMensaje.setText("No hay evento seleccionado para comprar.");
             return false;
@@ -253,6 +253,11 @@ public class ComprarEntradaController {
 
         if (asiento == null) {
             lblMensaje.setText("Debe seleccionar un asiento.");
+            return false;
+        }
+
+        if (metodoPago == null || metodoPago.isBlank()) {
+            lblMensaje.setText("Debe seleccionar un metodo de pago.");
             return false;
         }
 

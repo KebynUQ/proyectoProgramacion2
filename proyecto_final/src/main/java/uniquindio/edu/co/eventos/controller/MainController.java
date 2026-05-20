@@ -43,6 +43,9 @@ public class MainController {
     private Button btnMenuIncidencias;
 
     @FXML
+    private Button btnMenuNotificaciones;
+
+    @FXML
     private Button btnMenuPerfil;
 
     @FXML
@@ -66,6 +69,7 @@ public class MainController {
             mostrarBoton(btnMenuRecintos, true);
             mostrarBoton(btnMenuReportes, true);
             mostrarBoton(btnMenuIncidencias, true);
+            mostrarBoton(btnMenuNotificaciones, true);
         } else if (usuario != null) {
             lblUsuarioActual.setText("Usuario: " + usuario.getNombreCompleto());
             btnMenuCompras.setText("Mis compras");
@@ -73,6 +77,7 @@ public class MainController {
             mostrarBoton(btnMenuRecintos, false);
             mostrarBoton(btnMenuReportes, true);
             mostrarBoton(btnMenuIncidencias, false);
+            mostrarBoton(btnMenuNotificaciones, true);
         } else {
             lblUsuarioActual.setText("Sin sesion activa");
             btnMenuCompras.setText("Compras");
@@ -80,6 +85,7 @@ public class MainController {
             mostrarBoton(btnMenuRecintos, false);
             mostrarBoton(btnMenuReportes, false);
             mostrarBoton(btnMenuIncidencias, false);
+            mostrarBoton(btnMenuNotificaciones, false);
         }
     }
 
@@ -123,6 +129,15 @@ public class MainController {
             return;
         }
         cargarVista("IncidenciasView.fxml");
+    }
+
+    @FXML
+    private void mostrarNotificaciones() {
+        if (!Sesion.haySesionActiva()) {
+            mostrarEventos();
+            return;
+        }
+        cargarVista("NotificacionesView.fxml");
     }
 
     @FXML

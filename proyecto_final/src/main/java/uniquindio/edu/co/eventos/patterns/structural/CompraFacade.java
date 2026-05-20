@@ -1,10 +1,12 @@
 package uniquindio.edu.co.eventos.patterns.structural;
 
 import uniquindio.edu.co.eventos.model.Asiento;
+import uniquindio.edu.co.eventos.model.Administrador;
 import uniquindio.edu.co.eventos.model.Compra;
 import uniquindio.edu.co.eventos.model.Entrada;
 import uniquindio.edu.co.eventos.model.Evento;
 import uniquindio.edu.co.eventos.model.Incidencia;
+import uniquindio.edu.co.eventos.model.Notificacion;
 import uniquindio.edu.co.eventos.model.Pago;
 import uniquindio.edu.co.eventos.model.SistemaEventos;
 import uniquindio.edu.co.eventos.model.Usuario;
@@ -13,10 +15,12 @@ import uniquindio.edu.co.eventos.model.enums.EstadoAsiento;
 import uniquindio.edu.co.eventos.model.enums.EstadoCompra;
 import uniquindio.edu.co.eventos.model.enums.EstadoPago;
 import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+import uniquindio.edu.co.eventos.model.enums.TipoNotificacion;
 import uniquindio.edu.co.eventos.model.enums.TipoSolicitudCompra;
 import uniquindio.edu.co.eventos.patterns.behavioral.EstrategiaPago;
 import uniquindio.edu.co.eventos.patterns.behavioral.PagoSimulado;
 import uniquindio.edu.co.eventos.patterns.creational.CompraBuilder;
+import uniquindio.edu.co.eventos.util.GestorNotificaciones;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +64,12 @@ public class CompraFacade {
         compra.limpiarSolicitud();
         sistemaEventos.agregarCompra(compra);
         sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_COMPRA, "Se creo la compra " + compra.getIdCompra() + " en estado " + compra.getEstadoCompra());
+        notificarUsuarioCompra(
+                compra,
+                "Compra creada",
+                "Tu compra " + compra.getIdCompra() + " fue creada en estado " + compra.getEstadoCompra() + ".",
+                TipoNotificacion.COMPRA
+        );
         return compra;
     }
 
@@ -111,6 +121,12 @@ public class CompraFacade {
         if (modificadaPorAdministrador) {
             sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_COMPRA,
                     "El administrador modifico la compra " + compra.getIdCompra() + ".");
+            notificarUsuarioCompra(
+                    compra,
+                    "Compra modificada por administrador",
+                    "La compra " + compra.getIdCompra() + " fue modificada por el administrador.",
+                    TipoNotificacion.COMPRA
+            );
         } else {
             sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_COMPRA,
                     "Se modifico la compra " + compra.getIdCompra());
@@ -124,6 +140,11 @@ public class CompraFacade {
         }
         compra.setTipoSolicitud(TipoSolicitudCompra.SOLICITUD_MODIFICACION);
         compra.setMensajeSolicitud("El usuario solicita modificar esta compra.");
+        notificarAdministradores(
+                "Solicitud de modificacion",
+                "El usuario solicito modificar la compra " + compra.getIdCompra() + ".",
+                TipoNotificacion.SISTEMA
+        );
         return true;
     }
 
@@ -133,6 +154,11 @@ public class CompraFacade {
         }
         compra.setTipoSolicitud(TipoSolicitudCompra.SOLICITUD_CANCELACION);
         compra.setMensajeSolicitud("El usuario solicita cancelar esta compra.");
+        notificarAdministradores(
+                "Solicitud de cancelacion",
+                "El usuario solicito cancelar la compra " + compra.getIdCompra() + ".",
+                TipoNotificacion.SISTEMA
+        );
         return true;
     }
 
@@ -142,6 +168,11 @@ public class CompraFacade {
         }
         compra.setTipoSolicitud(TipoSolicitudCompra.SOLICITUD_CONFIRMACION_PAGO);
         compra.setMensajeSolicitud("El usuario espera confirmacion de pago.");
+        notificarAdministradores(
+                "Solicitud de confirmacion de pago",
+                "El usuario solicito confirmacion de pago para la compra " + compra.getIdCompra() + ".",
+                TipoNotificacion.SISTEMA
+        );
         return true;
     }
 
@@ -168,6 +199,12 @@ public class CompraFacade {
         compra.cancelar();
         compra.limpiarSolicitud();
         sistemaEventos.registrarIncidencia(TipoIncidencia.CANCELACION_COMPRA, "Se cancelo la compra " + compra.getIdCompra());
+        notificarUsuarioCompra(
+                compra,
+                "Solicitud de cancelacion aprobada",
+                "La cancelacion de tu compra " + compra.getIdCompra() + " fue aprobada.",
+                TipoNotificacion.COMPRA
+        );
         return true;
     }
 
@@ -198,12 +235,24 @@ public class CompraFacade {
 
         compra.limpiarSolicitud();
         sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_COMPRA, "Se confirmo el pago de la compra " + compra.getIdCompra());
+        notificarUsuarioCompra(
+                compra,
+                "Pago confirmado",
+                "El pago de la compra " + compra.getIdCompra() + " fue confirmado por el administrador.",
+                TipoNotificacion.PAGO
+        );
         return true;
     }
 
     public void rechazarSolicitud(Compra compra) {
         if (compra != null) {
             compra.limpiarSolicitud();
+            notificarUsuarioCompra(
+                    compra,
+                    "Solicitud rechazada",
+                    "Tu solicitud asociada a la compra " + compra.getIdCompra() + " fue rechazada.",
+                    TipoNotificacion.SISTEMA
+            );
         }
     }
 
@@ -223,6 +272,12 @@ public class CompraFacade {
         compra.cancelar();
         compra.limpiarSolicitud();
         sistemaEventos.registrarIncidencia(TipoIncidencia.CANCELACION_COMPRA, "El administrador cancelo la compra " + compra.getIdCompra());
+        notificarUsuarioCompra(
+                compra,
+                "Compra cancelada",
+                "El administrador cancelo la compra " + compra.getIdCompra() + ".",
+                TipoNotificacion.COMPRA
+        );
         return true;
     }
 
@@ -242,6 +297,12 @@ public class CompraFacade {
         }
 
         sistemaEventos.registrarIncidencia(TipoIncidencia.REEMBOLSO, "Se registro reembolso para la compra " + compra.getIdCompra());
+        notificarUsuarioCompra(
+                compra,
+                "Reembolso registrado",
+                "Se registro un reembolso para tu compra " + compra.getIdCompra() + ".",
+                TipoNotificacion.PAGO
+        );
         return true;
     }
 
@@ -263,6 +324,12 @@ public class CompraFacade {
         }
         sistemaEventos.agregarPago(pago);
         sistemaEventos.registrarIncidencia(TipoIncidencia.CAMBIO_ESTADO_COMPRA, "La compra " + compra.getIdCompra() + " fue pagada.");
+        notificarUsuarioCompra(
+                compra,
+                "Compra pagada",
+                "La compra " + compra.getIdCompra() + " fue pagada correctamente.",
+                TipoNotificacion.PAGO
+        );
         return true;
     }
 
@@ -285,5 +352,38 @@ public class CompraFacade {
                 descripcion
         );
         sistemaEventos.agregarIncidencia(incidencia);
+    }
+
+    private void notificarUsuarioCompra(Compra compra, String titulo, String mensaje, TipoNotificacion tipoNotificacion) {
+        if (compra == null || compra.getUsuario() == null || compra.getUsuario().getIdUsuario() == null) {
+            return;
+        }
+
+        Notificacion notificacion = new Notificacion(
+                "NOT-" + System.currentTimeMillis() + "-" + compra.getUsuario().getIdUsuario(),
+                titulo,
+                mensaje,
+                compra.getUsuario().getIdUsuario(),
+                tipoNotificacion
+        );
+        GestorNotificaciones.getInstancia().guardarNotificacion(notificacion);
+        compra.getUsuario().recibirNotificacion(notificacion);
+    }
+
+    private void notificarAdministradores(String titulo, String mensaje, TipoNotificacion tipoNotificacion) {
+        for (Administrador administrador : sistemaEventos.getAdministradores()) {
+            if (administrador.getIdAdministrador() == null) {
+                continue;
+            }
+            GestorNotificaciones.getInstancia().guardarNotificacion(
+                    new Notificacion(
+                            "NOT-" + System.currentTimeMillis() + "-" + administrador.getIdAdministrador(),
+                            titulo,
+                            mensaje,
+                            administrador.getIdAdministrador(),
+                            tipoNotificacion
+                    )
+            );
+        }
     }
 }

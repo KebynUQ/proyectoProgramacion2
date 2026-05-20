@@ -1,6 +1,8 @@
 package uniquindio.edu.co.eventos.model;
 
 import uniquindio.edu.co.eventos.model.enums.TipoIncidencia;
+import uniquindio.edu.co.eventos.model.enums.TipoNotificacion;
+import uniquindio.edu.co.eventos.util.GestorNotificaciones;
 
 import java.util.ArrayList;
 
@@ -227,6 +229,21 @@ public class SistemaEventos {
 
     public void registrarIncidencia(TipoIncidencia tipo, String descripcion) {
         agregarIncidencia(new Incidencia("INC-" + System.currentTimeMillis(), tipo, descripcion));
+
+        for (Administrador administrador : administradores) {
+            if (administrador.getIdAdministrador() == null) {
+                continue;
+            }
+            GestorNotificaciones.getInstancia().guardarNotificacion(
+                    new Notificacion(
+                            "NOT-" + System.currentTimeMillis() + "-" + administrador.getIdAdministrador(),
+                            "Incidencia registrada",
+                            descripcion,
+                            administrador.getIdAdministrador(),
+                            TipoNotificacion.INCIDENCIA
+                    )
+            );
+        }
     }
 
     public ArrayList<Usuario> getUsuarios() {
