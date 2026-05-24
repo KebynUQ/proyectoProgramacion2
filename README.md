@@ -9,6 +9,92 @@ Kebyn Julián Ochoa Pérez – Laura Vanessa Guerrero Blanco
 
 ---
 
+## Guía de ejecución en IntelliJ IDEA
+
+Esta guía reemplaza la explicación centrada únicamente en comandos Maven y está pensada para que cualquier estudiante pueda abrir, configurar y ejecutar el proyecto directamente desde IntelliJ IDEA Community o Ultimate.
+
+### Estructura general del proyecto
+
+- `proyecto_final/src/main/java/uniquindio/edu/co/eventos/model`: entidades principales del sistema.
+- `proyecto_final/src/main/java/uniquindio/edu/co/eventos/model/enums`: enumeraciones de estados y tipos del dominio.
+- `proyecto_final/src/main/java/uniquindio/edu/co/eventos/controller`: controladores de las vistas JavaFX.
+- `proyecto_final/src/main/java/uniquindio/edu/co/eventos/patterns`: implementaciones de patrones creacionales, estructurales y de comportamiento.
+- `proyecto_final/src/main/java/uniquindio/edu/co/eventos/util/DataSeeder.java`: inicialización de datos de prueba.
+- `proyecto_final/src/main/resources/uniquindio/edu/co/eventos/view`: vistas FXML.
+- `proyecto_final/src/main/resources/uniquindio/edu/co/eventos/css`: estilos CSS.
+- `proyecto_final/pom.xml`: configuración de Maven, JavaFX y dependencias del proyecto.
+
+### Requisitos para ejecutar
+
+Para abrir y ejecutar la aplicación correctamente se recomienda contar con:
+
+- IntelliJ IDEA Community o Ultimate.
+- JDK 21 o superior.
+- Maven habilitado dentro de IntelliJ para que cargue las dependencias del `pom.xml`.
+- Conexión inicial para descargar dependencias si todavía no están en caché local.
+
+### Cómo abrir el proyecto en IntelliJ IDEA
+
+1. Abrir IntelliJ IDEA.
+2. Seleccionar `Open`.
+3. Buscar la carpeta raíz del repositorio.
+4. Abrir la carpeta que contiene el archivo `proyecto_final/pom.xml`.
+5. Esperar a que IntelliJ detecte el proyecto Maven y descargue las dependencias.
+6. Verificar que no queden errores de SDK o de JavaFX al terminar la sincronización.
+
+### Configurar el JDK
+
+Si IntelliJ no reconoce el JDK automáticamente:
+
+1. Ir a `File`.
+2. Entrar a `Project Structure`.
+3. En `Project SDK`, seleccionar `JDK 21` o una versión superior compatible.
+4. Aplicar los cambios con `Apply` y luego `OK`.
+
+Si aparece un mensaje como `JDK missing`, basta con seleccionar un JDK ya instalado o descargarlo desde IntelliJ.
+
+### Configurar la clase principal
+
+Para ejecutar la aplicación correctamente desde IntelliJ:
+
+1. Ir a la parte superior derecha de IntelliJ.
+2. Abrir el menú de configuraciones de ejecución.
+3. Seleccionar `Edit Configurations`.
+4. Presionar el botón `+`.
+5. Elegir `Application`.
+6. En `Main class`, colocar:
+
+`uniquindio.edu.co.eventos.Launcher`
+
+7. En `Working directory`, dejar la carpeta raíz del proyecto o la carpeta `proyecto_final`, según la configuración sugerida por IntelliJ.
+8. Guardar con `Apply` y luego `OK`.
+9. Ejecutar con el botón verde de `Run`.
+
+### Clase principal del proyecto
+
+La clase que se debe ejecutar es:
+
+`uniquindio.edu.co.eventos.Launcher`
+
+Esta clase llama internamente a `MainApp`.
+
+No se recomienda ejecutar directamente `MainApp`, porque `Launcher` es el punto de entrada configurado también en el `pom.xml` para iniciar la aplicación JavaFX de forma consistente.
+
+### Ejecución con Maven
+
+Si se prefiere usar consola, también es posible ejecutar el proyecto con:
+
+```bash
+mvn clean compile
+mvn javafx:run
+```
+
+### Nota sobre Maven
+
+Aunque Maven sigue siendo importante para compilar, resolver dependencias y ejecutar pruebas, en este proyecto el flujo más práctico para desarrollo diario es abrirlo y correrlo desde IntelliJ IDEA con la configuración de `Launcher`.
+
+---
+
 ## 1. Abstracción
 
 ### ¿Qué se solicita finalmente?
